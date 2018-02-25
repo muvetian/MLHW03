@@ -3,7 +3,7 @@ import pandas as pd
 import os
 
 def main():
-    aggregate_all()
+    ag_frame = aggregate_all()
     #
     # for i in range(bic_man.shape[0]):
     #     bic_man.loc[i]["filename"]
@@ -121,7 +121,7 @@ def aggregate_all():
     aggregate_list.append(pa_frame)
     aggregate_list.append(um_frame)
     ag_frame = pd.concat(aggregate_list, ignore_index=True)
-    print ag_frame.loc[3000000]
+    return ag_frame
 
 if __name__ == "__main__":
     main()
