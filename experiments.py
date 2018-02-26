@@ -1,15 +1,57 @@
 import numpy as np
 import pandas as pd
 import os
+from sklearn import linear_model
+from sklearn import preprocessing
 
 def main():
     # ag_frame = save_aggregate_all()
     df = load_pkl()
-    print df
+    df = df.sample(frac=1).reset_index(drop=True)
+    train_set = df.loc[1:2315]
+    train_feat = train_set.drop(columns=['type'])
+    # processing train set
+    X_train = preprocessing.Imputer().fit_transform(train_feat)
+    train_target_p=preprocessing.Imputer().fit_transform([train_set['type']])
+    print train_target_p
+    y_train = np.reshape(train_target_p, (-1, 1))
+    print y_train
+
+    # processing test set
+    test_set = df.loc[2315:df.shape[0]]
+    test_feat = train_set.drop(columns=['type'])
+    X_test = preprocessing.Imputer().fit_transform(train_feat)
+    test_target_p=preprocessing.Imputer().fit_transform([test_set['type']])
+    y_test = np.reshape(train_target_p, (-1, 1))
+
+    print SGDclassifier(X_train,y_train,X_test,y_test)
+    # print X_train
+    # X_imputed=preprocessing.Imputer().fit_transform(X_train)
+    # for i in range(train_set.shape[0]-1):
+    #     try:
+    #         float(train_set.loc[i+1])
+    #     except:
+    #         print "error", "on row",i
+
+    # print train_set
+
+
+    # train_feat = train_set.columns.drop('type')
+    # train_target = train_set['type']
+
+
+
+
     # aggregate_test()
     #
     # for i in range(bic_man.shape[0]):
     #     bic_man.loc[i]["filename"]
+def SGDclassifier(X_train,y_train,X_test,y_test):
+    clf = linear_model.SGDClassifier()
+    clf.fit(X_train, y_train)
+    for i in range(test_set.shape[0]):
+        clf.predict(X_test)
+
 def load_pkl():
     df = pd.read_pickle("aggregate.pkl")
     return df
