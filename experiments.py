@@ -3,11 +3,12 @@ import pandas as pd
 import os
 from sklearn import linear_model
 from sklearn import preprocessing
-
+from sklearn.metrics import precision_score
+from sklearn.metrics import recall_score
+from sklearn.metrics import f1_score
 def main():
     # ag_frame = save_aggregate_all()
     df = load_pkl()
-    df = df.sample(frac=1).reset_index(drop=True)
     train_set = df.loc[1:2315]
     train_feat = train_set.drop(columns=['type'])
     # processing train set
@@ -49,8 +50,19 @@ def main():
 def SGDclassifier(X_train,y_train,X_test,y_test):
     clf = linear_model.SGDClassifier()
     clf.fit(X_train, y_train)
-    for i in range(test_set.shape[0]):
-        clf.predict(X_test)
+    counter = 0
+    y_true = []
+    y_pred = []
+
+    for i in range(X_test.shape[0]):
+        true = y_test[i]
+        predict = clf.predict([X_test[i]])
+        y_true.append(true)
+        y_pred.append(predict)
+    precision = precision_score(y_true, y_pred, average='weighted')
+    recall = recall_score(y_true, y_pred, average='weighted')
+    f1 = f1_score(y_true, y_pred, average='weighted')
+    return [precision,recall,f1]
 
 def load_pkl():
     df = pd.read_pickle("aggregate.pkl")
@@ -217,6 +229,7 @@ def save_aggregate_all():
     aggregate_list.append(pa_frame)
     aggregate_list.append(um_frame)
     ag_frame = pd.concat(aggregate_list, ignore_index=True)
+    ag_frame = ag_frame.sample(frac=1).reset_index(drop=True)
     ag_frame.to_pickle("aggregate.pkl")
     return ag_frame
 
